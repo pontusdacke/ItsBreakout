@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
-namespace Breakout
+namespace ItsBreakout
 {
     /// <summary>
     /// This is the main type for your game
@@ -91,7 +91,7 @@ namespace Breakout
             GraphicsDevice.Clear(Color.CornflowerBlue);
             
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
             gameField.DrawGameField(spriteBatch, gameTime);
             spriteBatch.End();
             base.Draw(gameTime);

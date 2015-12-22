@@ -15,7 +15,7 @@ namespace ItsBreakout
                 map.Run();
             }
 
-            using (Breakout.BreakoutGame game = new Breakout.BreakoutGame())
+            using (BreakoutGame game = new BreakoutGame())
             {
                 game.Run();
             }

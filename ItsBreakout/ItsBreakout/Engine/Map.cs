@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ItsBreakout;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,15 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Breakout
+namespace ItsBreakout.Engine
 {
     public class Map
     {
-        List<GameObject> blocks;
+        Random rand = new Random();
+        List<Block> blocks;
         float blockSize = 32;
 
-        public List<GameObject> Blocks
+        public List<Block> Blocks
         {
             get
             {
@@ -30,7 +32,7 @@ namespace Breakout
 
         public Map()
         {
-            Blocks = new List<GameObject>();
+            Blocks = new List<Block>();
         }
 
         public static Map Load(string filePath, Texture2D blockTexture) // TODO: Remove the texture dependency
@@ -67,23 +69,36 @@ namespace Breakout
             Vector2 newBlockPosition = new Vector2(mousePos.X - (mousePos.X % blockSize), mousePos.Y - (mousePos.Y % blockSize));
 
             // Check for duplicates
-            foreach (GameObject block in blocks)
+            foreach (Block block in blocks)
             {
                 if (block.Position == newBlockPosition)
+                {
+                    block.Heal();
                     return;
+                }
             }
 
-            Blocks.Add(new GameObject(newBlockPosition, texture));
+            Blocks.Add(new Block(1, newBlockPosition, texture));
         }
 
         public void RemoveBlock(Vector2 mousePos)
         {
-            // Position tile correctly
+            // Get correct tile from position
             Vector2 newBlockPosition = new Vector2(mousePos.X - (mousePos.X % blockSize), mousePos.Y - (mousePos.Y % blockSize));
+
             for (int i = 0; i < blocks.Count; i++)
             {
                 if (blocks[i].Position == newBlockPosition)
-                    blocks.RemoveAt(i);
+                {
+                    if (blocks[i].HitPoints > 1)
+                        blocks[i].Hit();
+                    else
+                    {
+                        blocks.RemoveAt(i);
+                        break;
+                    }
+
+                }
             }
         }
     }

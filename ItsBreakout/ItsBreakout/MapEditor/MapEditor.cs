@@ -1,14 +1,8 @@
-﻿using Breakout;
+﻿using ItsBreakout;
+using ItsBreakout.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace MapBuilder
 {
@@ -19,6 +13,8 @@ namespace MapBuilder
 
         bool savePressed = false;
         bool loadPressed = false;
+        bool leftMousePressed = false;
+        bool rightMousePressed = false;
 
         Texture2D blockTexture;
         Map map;
@@ -52,15 +48,25 @@ namespace MapBuilder
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed && !leftMousePressed)
             {
                 Vector2 mousePos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
                 map.AddBlock(mousePos, blockTexture);
+                leftMousePressed = true;
             }
-            else if (Mouse.GetState().RightButton == ButtonState.Pressed)
+            else if (Mouse.GetState().RightButton == ButtonState.Pressed && !rightMousePressed)
             {
                 Vector2 mousePos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
                 map.RemoveBlock(mousePos);
+                rightMousePressed = true;
+            }
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
+            {
+                leftMousePressed = false;
+            }
+            if (Mouse.GetState().RightButton == ButtonState.Released)
+            {
+                rightMousePressed = false;
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.S) && !savePressed)
@@ -93,7 +99,7 @@ namespace MapBuilder
         {
             spriteBatch.Begin();
 
-            foreach (GameObject b in map.Blocks)
+            foreach (Block b in map.Blocks)
             {
                 spriteBatch.Draw(b.Texture, b.Rectangle, b.Color);
             }

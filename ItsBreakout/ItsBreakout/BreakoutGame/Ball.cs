@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ItsBreakout.Engine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Breakout
+namespace ItsBreakout
 {
     class Ball : GameObject
     {
@@ -13,7 +14,7 @@ namespace Breakout
         public Ball(Vector2 Position, Texture2D Texture) : base(Position, Texture)
         {
             circle = new Circle(Texture.Width / 2, new Vector2(Position.X + Texture.Width / 2, Position.Y + Texture.Width / 2));
-            speed = 6;
+            speed = 12;
         }
         public void Update(ref Map map)
         {
@@ -27,10 +28,25 @@ namespace Breakout
             {
                 if (!map.Blocks[i].Hide && Intersects(map.Blocks[i].Rectangle))
                 {
-                    // Find the angle between the ball and the block to know what movement direction to switch.
-                    Vector2 v = new Vector2(map.Blocks[i].Rectangle.X - Position.X, map.Blocks[i].Rectangle.Y - Position.Y);
+                    // Back the ball
+                    Position.X -= Direction.X * speed; // Todo: speed
+                    Position.Y -= Direction.Y * speed;
 
-                    if (Math.Abs(v.X) == Math.Max(Math.Abs(v.X), Math.Abs(v.Y)))
+                    // Find the angle between the ball and the block to know what movement direction to switch.
+                    Vector2 v = new Vector2(
+                        map.Blocks[i].Rectangle.Center.X - Rectangle.Center.X,
+                        map.Blocks[i].Rectangle.Center.Y - Rectangle.Center.Y);
+                    //v.Normalize();
+                    //Vector2 facing = new Vector2(0, -1);
+                    //facing.Normalize();
+                    //double angle = Math.Acos(Dot(v, facing));
+
+                    //Direction = new Vector2(
+                    //(float)Math.Cos(angle),
+                    //-(float)Math.Sin(angle));
+
+
+                    if (Math.Abs(v.X) == Math.Max(Math.Abs(v.X), Math.Abs(v.Y)) && v.X != v.Y)
                     {
                         ReverseXMovement();
                     }
@@ -39,8 +55,12 @@ namespace Breakout
                         ReverseYMovement();
                     }
 
-                    map.Blocks.RemoveAt(i);
-                    i--; // We removed one. Let the loop know.
+                    map.Blocks[i].Hit();
+                    if (map.Blocks[i].HitPoints <= 0)
+                    {
+                        map.Blocks.RemoveAt(i);
+                        i--; // We removed one. Let the loop know.
+                    }
                     break; // We can only touch one block per loop (Bullet-through-paper fix)
                 }
             }
@@ -66,6 +86,10 @@ namespace Breakout
         public void Fire()
         {
             Direction = new Vector2(0, 1);
+        }
+        private float Dot(Vector2 a, Vector2 b)
+        {
+            return a.X * b.X + a.Y * b.Y;
         }
     }
 }

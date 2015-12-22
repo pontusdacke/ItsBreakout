@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ItsBreakout.Engine;
 
-namespace Breakout
+namespace ItsBreakout
 {
     class Board : GameObject
     {
@@ -26,12 +26,6 @@ namespace Breakout
             this.Position = Position;
             Hide = false;
         }
-
-        public void ChangePosition(Vector2 position)
-        {
-            this.Position.X = position.X;
-        }
-
         public void Update(ref Map map)
         {
             if (ballFired)
@@ -56,7 +50,7 @@ namespace Breakout
             {
                 ball.Position = new Vector2(
                     Position.X + Texture.Width / 2 - ball.Texture.Width / 2,
-                    Position.Y - ball.Texture.Height);
+                    Position.Y - ball.Texture.Height - 1);
 
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Breakout
+namespace ItsBreakout.Engine
 {
     public class GameObject
     {

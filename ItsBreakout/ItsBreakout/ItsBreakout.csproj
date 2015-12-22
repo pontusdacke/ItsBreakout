@@ -73,7 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BreakoutGame\Ball.cs" />
-    <Compile Include="BreakoutGame\BallPhysics.cs" />
+    <Compile Include="BreakoutGame\Block.cs" />
     <Compile Include="BreakoutGame\Board.cs" />
     <Compile Include="BreakoutGame\BreakoutGame.cs" />
     <Compile Include="BreakoutGame\GameField.cs" />

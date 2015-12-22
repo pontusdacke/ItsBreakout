@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ItsBreakout.Engine;
 
-namespace Breakout
+namespace ItsBreakout
 {
     class GameField
     {
@@ -40,7 +39,7 @@ namespace Breakout
         }
         public void DrawGameField(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            foreach (GameObject b in map.Blocks)
+            foreach (Block b in map.Blocks)
             {
                 b.Draw(spriteBatch);
             }
