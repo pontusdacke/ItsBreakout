@@ -14,6 +14,10 @@ namespace ItsBreakout.Engine
             get;
             set;
         }
+        public int Width
+        {
+            get { return Texture.Width; }
+        }
 
         public Rectangle Rectangle
         {
@@ -32,10 +36,11 @@ namespace ItsBreakout.Engine
             Texture = texture;
             Color = color;
         }
+
         public GameObject()
         {
-
         }
+
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             if (Texture != null && !Hide)

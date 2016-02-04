@@ -18,6 +18,7 @@ namespace ItsBreakout
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Vector2 windowSize = new Vector2(800, 600);
 
         public Game1()
         {
@@ -33,7 +34,8 @@ namespace ItsBreakout
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferHeight = (int)windowSize.Y;
+            graphics.PreferredBackBufferWidth = (int)windowSize.X;
 
             base.Initialize();
         }
@@ -47,7 +49,6 @@ namespace ItsBreakout
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -56,7 +57,6 @@ namespace ItsBreakout
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
         /// <summary>
@@ -70,7 +70,6 @@ namespace ItsBreakout
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -82,8 +81,6 @@ namespace ItsBreakout
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }

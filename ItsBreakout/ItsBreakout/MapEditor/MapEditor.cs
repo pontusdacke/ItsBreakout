@@ -1,8 +1,11 @@
 ﻿using ItsBreakout;
 using ItsBreakout.Engine;
+using ItsBreakout.Source;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MapBuilder
 {
@@ -16,8 +19,10 @@ namespace MapBuilder
         bool leftMousePressed = false;
         bool rightMousePressed = false;
 
-        Texture2D blockTexture;
-        Map map;
+        Dictionary<int, Texture2D> blockTextures;
+        BlockCollection map;
+        Rectangle windowRectangle = new Rectangle(0, 0, 800, 600);
+
 
         public MapEditor()
         {
@@ -27,19 +32,24 @@ namespace MapBuilder
 
         protected override void Initialize()
         {
-            graphics.PreferredBackBufferHeight = 600;
-            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = windowRectangle.Height;
+            graphics.PreferredBackBufferWidth = windowRectangle.Width;
             graphics.ApplyChanges();
 
-            map = new Map();
+            map = new BlockCollection();
             IsMouseVisible = true;
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
+            blockTextures = new Dictionary<int, Texture2D>();
+            blockTextures.Add(1, Content.Load<Texture2D>("block_green"));
+            blockTextures.Add(2, Content.Load<Texture2D>("block_red"));
+            blockTextures.Add(3, Content.Load<Texture2D>("block_teal"));
+            blockTextures.Add(4, Content.Load<Texture2D>("block_blue"));
+            blockTextures.Add(5, Content.Load<Texture2D>("block_pink"));
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            blockTexture = Content.Load<Texture2D>("block");
             base.LoadContent();
         }
 
@@ -48,16 +58,21 @@ namespace MapBuilder
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            // Dont allow clicks outside the window.
+            Rectangle mouseRect = new Rectangle(Mouse.GetState().X, Mouse.GetState().Y, 1, 1);
+            if (!mouseRect.Intersects(windowRectangle)) return;
+
+
             if (Mouse.GetState().LeftButton == ButtonState.Pressed && !leftMousePressed)
             {
                 Vector2 mousePos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
-                map.AddBlock(mousePos, blockTexture);
+                map.AddBlock(mousePos);
                 leftMousePressed = true;
             }
             else if (Mouse.GetState().RightButton == ButtonState.Pressed && !rightMousePressed)
             {
                 Vector2 mousePos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
-                map.RemoveBlock(mousePos);
+                map.DamageBlock(mousePos);
                 rightMousePressed = true;
             }
             if (Mouse.GetState().LeftButton == ButtonState.Released)
@@ -72,7 +87,14 @@ namespace MapBuilder
             if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.S) && !savePressed)
             {
                 savePressed = true;
-                map.Save(@"map1");
+                int levelNumber = 1;
+                string levelString = "map" + levelNumber.ToString();
+                while (File.Exists(levelString))
+                {
+                    levelNumber++;
+                    levelString = "map" + levelNumber.ToString();
+                }
+                map.Save(levelString);
 
             }
             if (Keyboard.GetState().IsKeyUp(Keys.LeftControl) && Keyboard.GetState().IsKeyUp(Keys.S))
@@ -87,7 +109,7 @@ namespace MapBuilder
             if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.L) && !loadPressed)
             {
                 savePressed = true;
-                map = Map.Load(@"map1", blockTexture);
+                map = BlockCollection.Load(@"map1");
             }
             if (Keyboard.GetState().IsKeyUp(Keys.LeftControl) && Keyboard.GetState().IsKeyUp(Keys.L))
                 loadPressed = false;
@@ -99,9 +121,9 @@ namespace MapBuilder
         {
             spriteBatch.Begin();
 
-            foreach (Block b in map.Blocks)
+            foreach (BlockData b in map.Blocks)
             {
-                spriteBatch.Draw(b.Texture, b.Rectangle, b.Color);
+                spriteBatch.Draw(blockTextures[b.HitPoints], b.Rectangle, Color.White);
             }
 
             spriteBatch.End();

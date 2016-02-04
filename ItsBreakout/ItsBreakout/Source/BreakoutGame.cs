@@ -8,18 +8,28 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using ItsBreakout.Source;
+using ItsBreakout.Engine;
 
-namespace ItsBreakout
+namespace ItsBreakout.Source
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
+
     public class BreakoutGame : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        GameField gameField;
 
+        public static int MaxLevels = 3;
+        public static int currentLevel = 1;
+        public static int ScreenWidth = 800;
+        public static int ScreenHeight = 600;
+        public static int Lives = 3;
+        StateEngine engine;
+
+        
         public BreakoutGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -34,10 +44,16 @@ namespace ItsBreakout
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            graphics.PreferredBackBufferHeight = 600;
-            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = ScreenHeight;
+            graphics.PreferredBackBufferWidth = ScreenWidth;
             graphics.ApplyChanges();
+
+            Settings.LoadSettings();
+
+            engine = new StateEngine(this);
+            engine.PushState(new MenuState(this, engine));
+            Components.Add(engine);
+
             base.Initialize();
         }
 
@@ -50,9 +66,9 @@ namespace ItsBreakout
             // Create a new SpriteBatch, which can be used to draw textures
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            gameField = new GameField();
-            gameField.LoadContent(Content);
-            // TODO: use this.Content to load your game content here
+            // Add spriteBatch to services to provide access to anything with access to this (game) class
+            Services.AddService(typeof(SpriteBatch), spriteBatch);
+
         }
 
         /// <summary>
@@ -61,7 +77,6 @@ namespace ItsBreakout
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
         /// <summary>
@@ -73,11 +88,8 @@ namespace ItsBreakout
         {
             // Allows the game to exit
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                this.Exit();
-            
-            gameField.UpdateGameField();
+                Exit();
 
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -90,11 +102,13 @@ namespace ItsBreakout
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             
-            // TODO: Add your drawing code here
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
-            gameField.DrawGameField(spriteBatch, gameTime);
-            spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            Settings.SaveSettings();
+            base.OnExiting(sender, args);
         }
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace ItsBreakout
+namespace ItsBreakout.Source
 {
     class Ball : GameObject
     {
@@ -14,38 +14,40 @@ namespace ItsBreakout
         public Ball(Vector2 Position, Texture2D Texture) : base(Position, Texture)
         {
             circle = new Circle(Texture.Width / 2, new Vector2(Position.X + Texture.Width / 2, Position.Y + Texture.Width / 2));
-            speed = 12;
+            speed = 6 + (1.2f * BreakoutGame.currentLevel);
         }
-        public void Update(ref Map map)
+        public void Update(ref BlockCollection map)
         {
-            Position.X += Direction.X * speed; // Todo: speed
+            // Movement physics
+            Position.X += Direction.X * speed;
             Position.Y += Direction.Y * speed;
 
+            // Center coordinate
             circle.Center = new Vector2(Position.X + Texture.Width / 2, Position.Y + Texture.Width / 2);
 
             // Check collision against blocks
             for (int i = 0; i < map.Blocks.Count; i++)
             {
-                if (!map.Blocks[i].Hide && Intersects(map.Blocks[i].Rectangle))
+                if (Intersects(map.Blocks[i].Rectangle))
                 {
                     // Back the ball
-                    Position.X -= Direction.X * speed; // Todo: speed
+                    Position.X -= Direction.X * speed;
                     Position.Y -= Direction.Y * speed;
 
                     // Find the angle between the ball and the block to know what movement direction to switch.
                     Vector2 v = new Vector2(
                         map.Blocks[i].Rectangle.Center.X - Rectangle.Center.X,
                         map.Blocks[i].Rectangle.Center.Y - Rectangle.Center.Y);
-                    //v.Normalize();
-                    //Vector2 facing = new Vector2(0, -1);
-                    //facing.Normalize();
-                    //double angle = Math.Acos(Dot(v, facing));
 
-                    //Direction = new Vector2(
-                    //(float)Math.Cos(angle),
-                    //-(float)Math.Sin(angle));
+                     // Fix going from square to rectangle
+                    float width = 64;
+                    float height = 26;
+                    float whratio = width / height; // y axis change (increase)
+                    float hwratio = height / width; // x axis change (decrease)
+                    v.Y = v.Y * whratio;
+                    v.X = v.X * hwratio;
 
-
+                    // Reverse X or Y direction based on the Vector2 v.
                     if (Math.Abs(v.X) == Math.Max(Math.Abs(v.X), Math.Abs(v.Y)) && v.X != v.Y)
                     {
                         ReverseXMovement();
@@ -55,15 +57,17 @@ namespace ItsBreakout
                         ReverseYMovement();
                     }
 
-                    map.Blocks[i].Hit();
-                    if (map.Blocks[i].HitPoints <= 0)
-                    {
-                        map.Blocks.RemoveAt(i);
-                        i--; // We removed one. Let the loop know.
-                    }
-                    break; // We can only touch one block per loop (Bullet-through-paper fix)
+                    // Damage block. If function returns true block is destroyed.
+                    if (map.DamageBlock(i)) i--;
+
+                    break; // We can only touch one block per frame (per update)
                 }
             }
+            
+            // Check collision against the screen
+            if (Position.X < 0) ReverseXMovement();
+            if (Position.X > 800 - Width) ReverseXMovement();
+            if (Position.Y < 0) ReverseYMovement();
         }
         public bool Intersects(Rectangle rectangle)
         {
@@ -85,7 +89,7 @@ namespace ItsBreakout
         }
         public void Fire()
         {
-            Direction = new Vector2(0, 1);
+            Direction = new Vector2(1, 1);
         }
         private float Dot(Vector2 a, Vector2 b)
         {

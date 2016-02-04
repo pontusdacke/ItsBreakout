@@ -2,32 +2,38 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ItsBreakout.Engine;
+using System.IO;
 
-namespace ItsBreakout
+namespace ItsBreakout.Source
 {
-    class Board : GameObject
+    class Player : GameObject
     {
-        int width = 100;
-
-        // The board owns the ball.
-        Ball ball;
+        /* TODO Public because we need to access position to check if it collides with bottom of screen
+         * Solve by breaking out physics and physics events more. (Delegate/Events)
+         * Somehow ball collision must be able to trigger a GameState(LevelLostState) creation.
+         */   
+    public Ball ball;
         private bool ballFired = false;
-        
 
-        public int Width
-        {
-            get { return width; }
-        }
+        // TODO load from file?
+        const string boardTexturePath = "board.png";
+        const string ballTexturePath = "ball.png";
 
-        public Board(Vector2 Position, Texture2D boardTexture, Texture2D ballTexture)
+        public Player(Game game)
         {
-            ball = new Ball(Position, ballTexture);
-            Texture = boardTexture;
-            this.Position = Position;
+            ball = new Ball(Position, Texture2D.FromStream(game.GraphicsDevice, File.OpenRead("Content\\" + ballTexturePath)));
+
+            Texture = Texture2D.FromStream(game.GraphicsDevice, File.OpenRead("Content\\" + boardTexturePath));
+            if (Texture == null) throw new FileNotFoundException();
+
             Hide = false;
+            
         }
-        public void Update(ref Map map)
+        public void Update(ref BlockCollection map)
         {
+            // Make board follow mouse
+            Position.X = Mouse.GetState().X - Width / 2;
+
             if (ballFired)
             {
                 // Move the ball ("physics")
@@ -39,12 +45,6 @@ namespace ItsBreakout
                     ball.CalculateNewDirection(Rectangle);
                     ball.ReverseYMovement();
                 }
-
-                // Check collision against the screen
-                if (ball.Position.X < 0) ball.ReverseXMovement();
-                if (ball.Position.X > 800) ball.ReverseXMovement();
-                if (ball.Position.Y > 600) ball.ReverseYMovement();
-                if (ball.Position.Y < 0) ball.ReverseYMovement();
             }
             else
             {
@@ -65,7 +65,12 @@ namespace ItsBreakout
         {
             ball.Draw(spriteBatch);
             spriteBatch.Draw(Texture, Position, Color.White);
-            //base.Draw(gameTime);
+        }
+        
+        public void Reset()
+        {
+            ballFired = false;
+            Position = new Vector2(350, 550);
         }
     }
 }
