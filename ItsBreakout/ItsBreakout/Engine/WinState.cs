@@ -1,43 +1,41 @@
-﻿using ItsBreakout.Engine;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using ItsBreakout.Source;
 
-namespace ItsBreakout.Source
+namespace ItsBreakout.Engine
 {
-    class LevelLostState : GameState
+    class WinState : GameState
     {
-        SpriteFont font;
         Texture2D background;
 
-        public LevelLostState(Game game, StateEngine stateEngine) : base(game, stateEngine)
+        public WinState(Game game, StateEngine stateEngine) : base(game, stateEngine)
         {
         }
 
         public override void Initialize()
         {
-            base.Initialize(); // Calls LoadContent().
+            base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            background = Game.Content.Load<Texture2D>("LevelFailed");
+            background = Game.Content.Load<Texture2D>("WinBackground");
             base.LoadContent();
         }
         public override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                BreakoutGame.currentLevel = 1; 
-                StateEngine.PopState();
+                while (StateEngine.GetPeekType() != typeof(MenuState))
+                    StateEngine.PopState(); 
             }
             base.Update(gameTime);
         }
-
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch.Begin();

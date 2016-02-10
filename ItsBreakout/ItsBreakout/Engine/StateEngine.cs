@@ -9,13 +9,7 @@ namespace ItsBreakout.Engine
     class StateEngine : DrawableGameComponent
     {
         Stack<GameState> states;
-
-        bool isRunning;
-
-        public bool IsRunning
-        {
-            get { return isRunning; }
-        }
+        
         public StateEngine(Game game) : base(game)
         {
             states = new Stack<GameState>();
@@ -50,19 +44,32 @@ namespace ItsBreakout.Engine
             if (states.Count > 0)
             {
                 states.Pop(); // Pop current state.
-                states.Peek().Resume(); // Resume top state
+                if (states.Count > 0)
+                    states.Peek().Resume(); // Resume top state
             }
         }
 
         public override void Update(GameTime gameTime)
         {
-            states.Peek().Update(gameTime);
+            if (states.Count == 0)
+                Game.Exit();
+            else
+                states.Peek().Update(gameTime);
             base.Update(gameTime);
         }
         public override void Draw(GameTime gameTime)
         {
-            states.Peek().Draw(gameTime);   
+            for (int i = states.Count - 1; i >= 0; i--)
+            {
+                states.ElementAt(i).Draw(gameTime);
+            }
+
             base.Draw(gameTime);
+        }
+
+        public Type GetPeekType()
+        {
+            return states.Peek().GetType();
         }
     }
 }

@@ -73,12 +73,17 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\WinState.cs" />
+    <Compile Include="Source\FileNameBox.cs" />
+    <Compile Include="Source\States\FadeInState.cs" />
+    <Compile Include="Source\States\FadeOutState.cs" />
     <Compile Include="Engine\GameState.cs" />
     <Compile Include="Engine\IGameState.cs" />
-    <Compile Include="Source\LevelLostState.cs" />
-    <Compile Include="Source\LevelWonState.cs" />
-    <Compile Include="Source\MenuState.cs" />
-    <Compile Include="Source\PlayState.cs" />
+    <Compile Include="Source\States\LevelLostState.cs" />
+    <Compile Include="Source\States\LevelSelectState.cs" />
+    <Compile Include="Source\States\LevelWonState.cs" />
+    <Compile Include="Source\States\MenuState.cs" />
+    <Compile Include="Source\States\PlayState.cs" />
     <Compile Include="Engine\StateEngine.cs" />
     <Compile Include="Source\Ball.cs" />
     <Compile Include="Source\BlockData.cs" />
@@ -94,6 +99,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Source\Settings.cs" />
+    <Compile Include="Source\Trail.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

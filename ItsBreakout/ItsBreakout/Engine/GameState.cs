@@ -42,7 +42,7 @@ namespace ItsBreakout.Engine
             //Game.Components.Remove(this);
         }
 
-        public void Resume()
+        public virtual void Resume()
         {
             //Game.Components.Add(this);
         }

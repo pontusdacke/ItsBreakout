@@ -1,5 +1,5 @@
 using ItsBreakout.Source;
-using MapBuilder;
+using ItsBreakout;
 
 namespace ItsBreakout
 {
@@ -11,11 +11,6 @@ namespace ItsBreakout
         /// </summary>
         static void Main(string[] args)
         {
-            using (MapEditor map = new MapEditor())
-            {
-                map.Run();
-            }
-
             using (BreakoutGame game = new BreakoutGame())
             {
                 game.Run();

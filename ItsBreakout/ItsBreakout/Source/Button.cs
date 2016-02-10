@@ -19,13 +19,13 @@ namespace ItsBreakout.Source
         float currentSize;
         string texturePath;
 
-        public delegate void Event();
+        public delegate void OnClickEvent();
 
-        public Event OnPress;
+        public OnClickEvent OnPress;
 
         const float normalSize = 1.0f;
-        const float hoverSize = 1.15f;
-        const float pressedSize = 0.85f;
+        const float hoverSize = 1.05f;
+        const float pressedSize = 0.95f;
 
         SpriteBatch spriteBatch
         {
@@ -59,6 +59,8 @@ namespace ItsBreakout.Source
 
         public override void Update(GameTime gameTime)
         {
+            if (!Enabled) return;
+
             Rectangle mouseRect = new Rectangle(Mouse.GetState().X, Mouse.GetState().Y, 1, 1);
 
             // On Mouse Hover (Down/Release inside)
@@ -89,8 +91,10 @@ namespace ItsBreakout.Source
 
         public override void Draw(GameTime gameTime)
         {
+            float fade = (Enabled) ? 1.0f : 0.5f;
+
             if (texture != null)
-                spriteBatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, currentSize, SpriteEffects.None, 1.0f);
+                spriteBatch.Draw(texture, position, null, Color.White * fade, 0f, Vector2.Zero, currentSize, SpriteEffects.None, 1.0f);
             base.Draw(gameTime);
         }
     }

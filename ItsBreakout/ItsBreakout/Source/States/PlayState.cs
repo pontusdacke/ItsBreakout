@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ItsBreakout.Engine;
@@ -14,7 +11,11 @@ namespace ItsBreakout.Source
         BlockCollection blockCollection;
         Texture2D backgroundTexture;
         Dictionary<int, Texture2D> blockTextures;
-        SpriteFont font;
+        bool hasStarted;
+
+        // Life bar
+        Texture2D lifeTexture;
+        const string lifeBarText = "Lives left: ";
 
         public PlayState(Game game, StateEngine stateEngine) : base(game, stateEngine)
         {
@@ -26,6 +27,7 @@ namespace ItsBreakout.Source
 
         public override void Initialize()
         {
+            Game.IsMouseVisible = false;
             base.Initialize();
         }
         protected override void LoadContent()
@@ -36,7 +38,7 @@ namespace ItsBreakout.Source
             blockTextures.Add(4, Game.Content.Load<Texture2D>("block_blue"));
             blockTextures.Add(5, Game.Content.Load<Texture2D>("block_pink"));
             backgroundTexture = Game.Content.Load<Texture2D>("background");
-            font = Game.Content.Load<SpriteFont>("font");
+            lifeTexture = Game.Content.Load<Texture2D>("life");
             LoadNewLevel();
 
             base.LoadContent();
@@ -44,28 +46,27 @@ namespace ItsBreakout.Source
 
         public override void Update(GameTime gameTime)
         {
+            // Update player
+            player.Update(ref blockCollection);
+
             // Game won
             if (blockCollection.Blocks.Count <= 0)
             {
-                StateEngine.PushState(new LevelWonState(Game, StateEngine));
-                BreakoutGame.currentLevel++;
-                LoadNewLevel();
-                return;
+                // Check if all levels are won
+                if (BreakoutGame.currentLevel == BreakoutGame.MaxLevel)
+                {
+                    StateEngine.PushState(new WinState(Game, StateEngine));
+                }
+                else // Else continue to next level
+                {
+                    StateEngine.PushState(new FadeInState(Game, StateEngine, new LevelWonState(Game, StateEngine)));
+                }
             }
             // Game lost
             else if (player.ball.Position.Y > player.Position.Y)
             {
-                StateEngine.PushState(new LevelLostState(Game, StateEngine));
-                BreakoutGame.Lives--;
-                if (BreakoutGame.Lives == 0)
-                {
-                    BreakoutGame.currentLevel = 1;
-                }
-                LoadNewLevel();
+                StateEngine.PushState(new FadeInState(Game, StateEngine, new LevelLostState(Game, StateEngine)));
             }
-
-            // Update player
-            player.Update(ref blockCollection);
 
             base.Update(gameTime);
         }
@@ -79,14 +80,14 @@ namespace ItsBreakout.Source
 
             // Draw blocks
             foreach (BlockData block in blockCollection.Blocks)
-            {
                 SpriteBatch.Draw(blockTextures[block.HitPoints], block.Position, Color.White);
-            }
 
             // Draw player
             player.Draw(SpriteBatch);
 
-            SpriteBatch.DrawString(font, "Lives left: " + BreakoutGame.Lives.ToString(), Vector2.Zero, Color.Black);
+            // Draw Life
+            for (int i = 0; i < BreakoutGame.Lives; i++)
+                SpriteBatch.Draw(lifeTexture, new Vector2(10 + (lifeTexture.Width+10) * i, 20), Color.White);
 
             SpriteBatch.End();
             base.Draw(gameTime);
@@ -96,6 +97,11 @@ namespace ItsBreakout.Source
         {
             blockCollection = BlockCollection.Load(@"map" + BreakoutGame.currentLevel.ToString());
             player.Reset();
+        }
+        public override void Resume()
+        {
+            LoadNewLevel();
+            base.Resume();
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using ItsBreakout.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace ItsBreakout.Source
@@ -10,21 +11,44 @@ namespace ItsBreakout.Source
         Vector2 Direction;
         Circle circle;
         float speed;
+        // Debug float
+        const float slowmo = 1.0f;
+        public Vector2 Origin
+        {
+            get;
+            private set;
+        }
 
         public Ball(Vector2 Position, Texture2D Texture) : base(Position, Texture)
         {
             circle = new Circle(Texture.Width / 2, new Vector2(Position.X + Texture.Width / 2, Position.Y + Texture.Width / 2));
             speed = 6 + (1.2f * BreakoutGame.currentLevel);
+            Origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+
+
         }
         public void Update(ref BlockCollection map)
         {
-            // Movement physics
-            Position.X += Direction.X * speed;
-            Position.Y += Direction.Y * speed;
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                // DEBUG
+                // Movement physics
+                Position.X += Direction.X * slowmo;
+                Position.Y += Direction.Y * slowmo;
+
+            }
+            else
+            {
+                // Movement physics
+                Position.X += Direction.X * speed;
+                Position.Y += Direction.Y * speed;
+
+            }
 
             // Center coordinate
             circle.Center = new Vector2(Position.X + Texture.Width / 2, Position.Y + Texture.Width / 2);
 
+            #region Collision detection / response
             // Check collision against blocks
             for (int i = 0; i < map.Blocks.Count; i++)
             {
@@ -39,7 +63,7 @@ namespace ItsBreakout.Source
                         map.Blocks[i].Rectangle.Center.X - Rectangle.Center.X,
                         map.Blocks[i].Rectangle.Center.Y - Rectangle.Center.Y);
 
-                     // Fix going from square to rectangle
+                    // Correct angles from square to rectangle
                     float width = 64;
                     float height = 26;
                     float whratio = width / height; // y axis change (increase)
@@ -63,7 +87,8 @@ namespace ItsBreakout.Source
                     break; // We can only touch one block per frame (per update)
                 }
             }
-            
+            #endregion
+
             // Check collision against the screen
             if (Position.X < 0) ReverseXMovement();
             if (Position.X > 800 - Width) ReverseXMovement();
@@ -89,11 +114,15 @@ namespace ItsBreakout.Source
         }
         public void Fire()
         {
-            Direction = new Vector2(1, 1);
+            Direction = new Vector2(1, -1);
         }
-        private float Dot(Vector2 a, Vector2 b)
+
+        // Private Methods
+        float Dot(Vector2 a, Vector2 b)
         {
             return a.X * b.X + a.Y * b.Y;
         }
+
+       
     }
 }

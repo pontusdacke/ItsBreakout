@@ -1,4 +1,5 @@
-﻿using ItsBreakout.Engine;
+﻿using ItsBreakout;
+using ItsBreakout.Engine;
 using ItsBreakout.Source;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,79 +7,62 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.IO;
 
-namespace ItsBreakout
+namespace MapBuilder
 {
-    class MapEditorState : GameState
+    class MapEditor : Game
     {
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
+
         bool savePressed = false;
         bool loadPressed = false;
         bool leftMousePressed = false;
         bool rightMousePressed = false;
-        bool showTextBox = false;
-
-        string fileName = "";
 
         Dictionary<int, Texture2D> blockTextures;
         BlockCollection map;
         Rectangle windowRectangle = new Rectangle(0, 0, 800, 600);
 
-        TextPopupState textPopup;
 
-        Texture2D background;
-
-        public MapEditorState(Game game, StateEngine stateEngine) : base(game, stateEngine)
+        public MapEditor()
         {
-            textPopup = new TextPopupState(game, stateEngine);
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
         }
 
-        public override void Initialize()
+        protected override void Initialize()
         {
+            graphics.PreferredBackBufferHeight = windowRectangle.Height;
+            graphics.PreferredBackBufferWidth = windowRectangle.Width;
+            graphics.ApplyChanges();
+
             map = new BlockCollection();
-            textPopup.Initialize();
+            IsMouseVisible = true;
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             blockTextures = new Dictionary<int, Texture2D>();
-            blockTextures.Add(1, Game.Content.Load<Texture2D>("block_green"));
-            blockTextures.Add(2, Game.Content.Load<Texture2D>("block_red"));
-            blockTextures.Add(3, Game.Content.Load<Texture2D>("block_teal"));
-            blockTextures.Add(4, Game.Content.Load<Texture2D>("block_blue"));
-            blockTextures.Add(5, Game.Content.Load<Texture2D>("block_pink"));
-            background = Game.Content.Load<Texture2D>("background");
+            blockTextures.Add(1, Content.Load<Texture2D>("block_green"));
+            blockTextures.Add(2, Content.Load<Texture2D>("block_red"));
+            blockTextures.Add(3, Content.Load<Texture2D>("block_teal"));
+            blockTextures.Add(4, Content.Load<Texture2D>("block_blue"));
+            blockTextures.Add(5, Content.Load<Texture2D>("block_pink"));
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             base.LoadContent();
         }
 
-        public override void Update(GameTime gameTime)
+        protected override void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
             // Dont allow clicks outside the window.
             Rectangle mouseRect = new Rectangle(Mouse.GetState().X, Mouse.GetState().Y, 1, 1);
             if (!mouseRect.Intersects(windowRectangle)) return;
 
-            // Popup box
-            // TODO it should handle itself somehow.
-            if (showTextBox)
-            {
-                textPopup.Update(gameTime);
 
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-                {
-                    showTextBox = false;
-                    int tempNumber = 1;
-                    string enteredText = textPopup.EnteredString;
-                    fileName = enteredText;
-                    while (File.Exists(fileName))
-                    {
-                        tempNumber++;
-                        fileName = enteredText + tempNumber.ToString();
-                    }
-                    map.Save(fileName);
-                }
-
-                return;
-            }
-            
             if (Mouse.GetState().LeftButton == ButtonState.Pressed && !leftMousePressed)
             {
                 Vector2 mousePos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
@@ -103,7 +87,14 @@ namespace ItsBreakout
             if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.S) && !savePressed)
             {
                 savePressed = true;
-                showTextBox = true;
+                int levelNumber = 1;
+                string levelString = "map" + levelNumber.ToString();
+                while (File.Exists(levelString))
+                {
+                    levelNumber++;
+                    levelString = "map" + levelNumber.ToString();
+                }
+                map.Save(levelString);
 
             }
             if (Keyboard.GetState().IsKeyUp(Keys.LeftControl) && Keyboard.GetState().IsKeyUp(Keys.S))
@@ -118,8 +109,7 @@ namespace ItsBreakout
             if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.L) && !loadPressed)
             {
                 savePressed = true;
-                // TODO Load map
-                //map = BlockCollection.Load(@"map1");
+                map = BlockCollection.Load(@"map1");
             }
             if (Keyboard.GetState().IsKeyUp(Keys.LeftControl) && Keyboard.GetState().IsKeyUp(Keys.L))
                 loadPressed = false;
@@ -127,22 +117,16 @@ namespace ItsBreakout
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        protected override void Draw(GameTime gameTime)
         {
-            SpriteBatch.Begin();
-            SpriteBatch.Draw(background, Vector2.Zero, Color.White);
+            spriteBatch.Begin();
 
             foreach (BlockData b in map.Blocks)
             {
-                SpriteBatch.Draw(blockTextures[b.HitPoints], b.Rectangle, Color.White);
+                spriteBatch.Draw(blockTextures[b.HitPoints], b.Rectangle, Color.White);
             }
 
-            if (showTextBox)
-            {
-                textPopup.Draw(gameTime);
-            }
-
-            SpriteBatch.End();
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }

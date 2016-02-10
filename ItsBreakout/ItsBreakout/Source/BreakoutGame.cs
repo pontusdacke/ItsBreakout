@@ -22,7 +22,7 @@ namespace ItsBreakout.Source
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public static int MaxLevels = 3;
+        public static int MaxLevel = 5;
         public static int currentLevel = 1;
         public static int ScreenWidth = 800;
         public static int ScreenHeight = 600;
