@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using ItsBreakout.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ItsBreakout.Engine;
+using System.Collections.Generic;
 
 namespace ItsBreakout.Source
 {
