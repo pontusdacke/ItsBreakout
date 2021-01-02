@@ -59,7 +59,7 @@ namespace ItsBreakout.Source
                 }
                 else // Else continue to next level
                 {
-                    StateEngine.PushState(new FadeInState(Game, StateEngine, new LevelWonState(Game, StateEngine)));
+                    StateEngine.PushState(new FadeInState(Game, StateEngine, new LevelCompletedState(Game, StateEngine)));
                 }
             }
             // Game lost
@@ -95,6 +95,11 @@ namespace ItsBreakout.Source
 
         void LoadNewLevel()
         {
+            if (BreakoutGame.currentLevel > BreakoutGame.MaxLevel)
+            {
+                StateEngine.PushState(new WinState(Game, StateEngine));
+            }
+
             blockCollection = BlockCollection.Load(@"map" + BreakoutGame.currentLevel.ToString());
             player.Reset();
         }

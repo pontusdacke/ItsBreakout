@@ -10,21 +10,19 @@ namespace ItsBreakout
 {
     class MapEditorState : GameState
     {
-        bool savePressed = false;
-        bool loadPressed = false;
-        bool leftMousePressed = false;
-        bool rightMousePressed = false;
-        bool showTextBox = false;
+        private bool savePressed = false;
+        private bool loadPressed = false;
+        private bool leftMousePressed = false;
+        private bool rightMousePressed = false;
+        private bool showTextBox = false;
 
-        string fileName = "";
+        private Dictionary<int, Texture2D> blockTextures;
+        private BlockCollection map;
+        private Rectangle windowRectangle = new Rectangle(0, 0, 800, 600);
 
-        Dictionary<int, Texture2D> blockTextures;
-        BlockCollection map;
-        Rectangle windowRectangle = new Rectangle(0, 0, 800, 600);
+        private readonly TextPopupState textPopup;
 
-        TextPopupState textPopup;
-
-        Texture2D background;
+        private Texture2D background;
 
         public MapEditorState(Game game, StateEngine stateEngine) : base(game, stateEngine)
         {
@@ -66,8 +64,8 @@ namespace ItsBreakout
                 {
                     showTextBox = false;
                     int tempNumber = 1;
-                    string enteredText = textPopup.EnteredString;
-                    fileName = enteredText;
+                    var enteredText = textPopup.EnteredString;
+                    var fileName = enteredText;
                     while (File.Exists(fileName))
                     {
                         tempNumber++;

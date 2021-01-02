@@ -1,12 +1,7 @@
-﻿using ItsBreakout;
-using ItsBreakout.Source;
+﻿using ItsBreakout.Source;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -15,8 +10,6 @@ namespace ItsBreakout.Engine
 
     public class BlockCollection
     {        
-        Random rand = new Random();
-
         // TODO Dont hardcode
         Vector2 blockSize = new Vector2(64,26);
         const string contentPath = @"Content\";

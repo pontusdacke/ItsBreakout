@@ -1,36 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using ItsBreakout.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ItsBreakout.Engine;
 
 namespace ItsBreakout.Source
 {
 
-    class LevelWonState : GameState
+    class LevelCompletedState : GameState
     {
         Texture2D background;
-        public LevelWonState(Game game, StateEngine stateEngine) : base(game, stateEngine)
+        public LevelCompletedState(Game game, StateEngine stateEngine) : base(game, stateEngine)
         {
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize(); // Calls LoadContent().
         }
 
         protected override void LoadContent()
         {
-            // Load background image
             background = Game.Content.Load<Texture2D>("LevelCompleted");
             base.LoadContent();
         }
         public override void Update(GameTime gameTime)
         {
-            // Press space to continue
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
                 BreakoutGame.currentLevel++; 
@@ -41,7 +30,6 @@ namespace ItsBreakout.Source
 
         public override void Draw(GameTime gameTime)
         {
-            // Draw background image
             SpriteBatch.Begin();
             SpriteBatch.Draw(background, Vector2.Zero, Color.White);
             SpriteBatch.End();

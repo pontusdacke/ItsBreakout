@@ -1,5 +1,4 @@
 using ItsBreakout.Source;
-using ItsBreakout;
 
 namespace ItsBreakout
 {

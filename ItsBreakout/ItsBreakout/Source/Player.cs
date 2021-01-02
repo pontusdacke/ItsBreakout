@@ -34,21 +34,14 @@ namespace ItsBreakout.Source
         public void Update(ref BlockCollection map)
         {
             // Make board follow mouse
-            Position.X = Mouse.GetState().X - Width / 2;
+            FollowMouse();
 
             if (ballFired)
             {
-                // Move the ball ("physics")
                 ball.Update(ref map);
 
-                // Check collision against board (the player)
-                if (ball.Intersects(Rectangle))
-                {
-                    ball.CalculateNewDirection(Rectangle);
-                    ball.ReverseYMovement();
-                }
+                CheckCollission();
 
-                // Trail
                 trail.AddPosition(ball.Position + ball.Origin);
             }
             else
@@ -63,7 +56,21 @@ namespace ItsBreakout.Source
                     ball.Fire();
                 }
             }
-            
+
+        }
+
+        private void CheckCollission()
+        {
+            if (ball.Intersects(Rectangle))
+            {
+                ball.CalculateNewDirection(Rectangle);
+                ball.ReverseYMovement();
+            }
+        }
+
+        private void FollowMouse()
+        {
+            Position.X = Mouse.GetState().X - Width / 2;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

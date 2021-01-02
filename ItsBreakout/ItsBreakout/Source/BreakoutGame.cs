@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using ItsBreakout.Engine;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using ItsBreakout.Source;
-using ItsBreakout.Engine;
+using System;
 
 namespace ItsBreakout.Source
 {
@@ -22,7 +15,7 @@ namespace ItsBreakout.Source
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public static int MaxLevel = 5;
+        public static int MaxLevel = 3;
         public static int currentLevel = 1;
         public static int ScreenWidth = 800;
         public static int ScreenHeight = 600;
